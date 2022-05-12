@@ -39,13 +39,18 @@ public class SequenceServer {
     }
 
 	//Fetch back inforamtion about samples
-	public String sequence(Request req, Response res) {
-		res.type("application/json");
-		String name= req.params(":name");
-		String json = "{"+name+":"+1+"}" ;
-		res.type("application/json");
-		return json;
-	}
+    public String sequence(Request req, Response res) {
+        res.type("application/json");
+        String name = req.params(":name");
+        //Add Code Below Here
+        FindOneAndUpdateOptions options = new FindOneAndUpdateOptions();
+        options.upsert(true);
+        options.returnDocument(ReturnDocument.AFTER);
+        Document r = sequences.findOneAndUpdate(eq("_id",name), inc("count",1), options);
+        String json = "{" + name + ":" + r.getInteger("count") + "}";
+        return json;
+    }
+
 
 
 
